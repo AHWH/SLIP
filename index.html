@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SLOCA (Project SLIP)</title>
+    <link rel="stylesheet" href="assets/css/normalize.css">
+    <link rel="stylesheet" href="assets/css/bootstrap-reboot.min.css">
+    <link rel="stylesheet" href="assets/css/bootstrap.min.css">
+    <link rel="stylesheet" href="assets/css/bootstrap-grid.min.css">
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="col-4 mx-auto align-self-center">
+                <h1>Login</h1>
+            </div>
+        </div>
+        <div class="row align-items-center">
+            <div class="col-4 mx-auto align-self-center">
+                <form action="php/login/LoginHandler.php" method="post">
+                    <div class="row align-items-center">
+                        <label for="username">Username</label>
+                        <input type="text" name="username" id="username" required/>
+                    </div>
+                    <div class="row align-items-center">
+                        <label for="password">Password</label>
+                        <input type="password" name="password" id="password" required/>
+                    </div>
+                    <div class="row align-items-center">
+                        <button class="btn btn-primary" type="submit">Login</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
