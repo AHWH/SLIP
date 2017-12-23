@@ -7,28 +7,32 @@
     <link rel="stylesheet" href="assets/css/bootstrap-reboot.min.css">
     <link rel="stylesheet" href="assets/css/bootstrap.min.css">
     <link rel="stylesheet" href="assets/css/bootstrap-grid.min.css">
+    <link rel="stylesheet" href="assets/css/basicjet-login.css">
 </head>
 <body>
-    <div class="container-fluid">
-        <div class="row align-items-center">
-            <div class="col-4 mx-auto align-self-center">
-                <h1>Login</h1>
+    <div class="jumbotron jumbotron-fluid">
+        <div id="LoginContainer" class="container">
+            <div id="titlerow" class="row center">
+                <div class="col">
+                    <h1>Sign in to SLOCA</h1>
+                </div>
             </div>
-        </div>
-        <div class="row align-items-center">
-            <div class="col-4 mx-auto align-self-center">
+            <div id="subtitlerow" class="row center">
+                <div class="col">
+                    <h5 class="text-muted">Enter your details below</h5>
+                </div>
+            </div>
+            <div id="loginform">
                 <form action="php/login/LoginHandler.php" method="post">
-                    <div class="row align-items-center">
+                    <div class="form-group">
                         <label for="username">Username</label>
-                        <input type="text" name="username" id="username" required/>
+                        <input type="text" name="username" id="username" class="form-control" placeholder="abc.xyz.2014" required/>
                     </div>
-                    <div class="row align-items-center">
+                    <div class="form-group">
                         <label for="password">Password</label>
-                        <input type="password" name="password" id="password" required/>
+                        <input type="password" name="password" id="password" class="form-control" placeholder="Enter your Password" required/>
                     </div>
-                    <div class="row align-items-center">
-                        <button class="btn btn-primary" type="submit">Login</button>
-                    </div>
+                    <button class="btn btn-primary loginbtn" type="submit">Login</button>
                 </form>
             </div>
         </div>

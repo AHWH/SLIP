@@ -42,6 +42,12 @@
 
         </nav>
     </div>
+
+    <div class="row">
+        <div class="col-12 footer">
+            <a href="logout.php">Logout</a>
+        </div>
+    </div>
 </div>
 
 <div id="content" class="container-fluid">

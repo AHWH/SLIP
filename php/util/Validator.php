@@ -170,7 +170,7 @@ class Validator
     static function validateLocationHistory(&$data) : array {
         $errors = array();
 
-        /*$data[0] = trim($data[0]);
+        $data[0] = trim($data[0]);
         $timestamp = $data[0];
         if (empty($timestamp)) {
             $errors['blank timestamp'] = "";
@@ -178,7 +178,7 @@ class Validator
             if(!DateTime::createFromFormat('Y-m-d G:i:s', $timestamp)) {
                 $errors['invalid timestamp'] = $timestamp;
             }
-        }*
+        }
 
         $data[1] = trim($data[1]);
         $macAddress = $data[1];
@@ -210,7 +210,7 @@ class Validator
             } else {
                 $errors['invalid location id'] = "{$locationID} contains non-numeric character(s)";
             }
-        }*/
+        }
 
         //Still left with validate locationID with location-lookup.csv and duplicate row(s)
         //Check by caller

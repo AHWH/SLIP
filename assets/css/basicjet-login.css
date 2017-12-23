@@ -1,0 +1,43 @@
+.jumbotron {
+    height: 100vh;
+    margin-bottom: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: start;
+    background-color: #FAFAFA;
+}
+
+#LoginContainer {
+    margin-top: 3rem;
+    width: 40%;
+}
+
+.center {
+    text-align: center;
+}
+
+#titlerow h1 {
+    text-align: center;
+    color: #191924;
+    font-size: 3rem;
+    font-weight: 300;
+}
+
+#loginform {
+    margin-top: 4rem;
+}
+
+.loginbtn {
+    width: 100%;
+    margin-top: 2rem;
+    background-color: #7A97B0;
+    border: none;
+}
+
+.loginbtn:hover {
+    background-color: #334A79;
+}
+
+.loginbtn:active {
+    border: none;
+}

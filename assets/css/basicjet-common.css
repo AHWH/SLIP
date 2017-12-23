@@ -1,5 +1,5 @@
 body {
-    background-color: #E7E7E7;
+    background-color: #FAFAFA;
 }
 
 .header {
@@ -12,7 +12,7 @@ body {
     position: fixed;
     left: 0;
     width: 16.5vw;
-    background-color: #34334B;
+    background-color: #191924;
     height: 100%;
     box-shadow: 3px 0 10px rgba(20, 20, 20, 0.2);
     padding-left: 25px;
@@ -73,5 +73,28 @@ body {
 
 #bootstrap-form .row {
     margin-top: 2rem;
+}
+
+#amtinserted h5 {
+    font-weight: 400;
+}
+
+#amtinserted h6 {
+    font-weight: 400;
+}
+
+.footer {
+    position: fixed;
+    bottom: 20px;
+}
+
+.footer a {
+    color: #FFF;
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.footer a:hover {
+    text-decoration: none;
 }
 

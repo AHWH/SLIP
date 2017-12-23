@@ -10,33 +10,82 @@ require_once '../util/Validator.php';
 require_once '../data/model/FileRowError.php';
 require_once '../data/model/LocationHistory.php';
 
+include('../log4php/Logger.php');
+
 class AdminBase
 {
-    public function bootstrap() {
-        $dbConnectorInstance = DatabaseConnector::getInstance();
-        $dbConnector = $dbConnectorInstance->getConnection();
+    private $logger;
 
-        $sql = 'SET FOREIGN_KEY_CHECKS = 0';
-        $stmt = $dbConnector->prepare($sql);
-        $stmt->execute();
-
-        $sql = 'TRUNCATE TABLE location_history';
-        $stmt = $dbConnector->prepare($sql);
-        $stmt->execute();
-
-        $sql = 'TRUNCATE TABLE location';
-        $stmt = $dbConnector->prepare($sql);
-        $stmt->execute();
-
-        $sql = 'TRUNCATE TABLE user';
-        $stmt = $dbConnector->prepare($sql);
-        $stmt->execute();
-
-        $sql = 'SET FOREIGN_KEY_CHECKS = 1';
-        $stmt = $dbConnector->prepare($sql);
-        $stmt->execute();
+    /**
+     * AdminBase constructor.
+     */
+    public function __construct()
+    {
+        Logger::configure('../log4php/config/config.xml');
+        $this->logger = Logger::getLogger('main');
     }
 
+
+    /**
+     * Wipes the entire database
+     * @return bool returns TRUE if successfully completed the Bootstrap process. Else returns false
+     */
+    public function bootstrap() : bool {
+        $dbConnectorInstance = DatabaseConnector::getInstance();
+        $dbConnector = $dbConnectorInstance->getConnection();
+        $dbConnector->beginTransaction();
+
+        try {
+            $sql = 'SET FOREIGN_KEY_CHECKS = 0';
+            $stmt = $dbConnector->prepare($sql);
+            if(!$stmt->execute()) {
+                $dbConnector->rollBack();
+                return false;
+            }
+
+            $sql = 'TRUNCATE TABLE location_history';
+            $stmt = $dbConnector->prepare($sql);
+            if(!$stmt->execute()) {
+                $dbConnector->rollBack();
+                return false;
+            }
+
+            $sql = 'TRUNCATE TABLE location';
+            $stmt = $dbConnector->prepare($sql);
+            if(!$stmt->execute()) {
+                $dbConnector->rollBack();
+                return false;
+            }
+
+            $sql = 'TRUNCATE TABLE user';
+            $stmt = $dbConnector->prepare($sql);
+            if(!$stmt->execute()) {
+                $dbConnector->rollBack();
+                return false;
+            }
+
+            $sql = 'SET FOREIGN_KEY_CHECKS = 1';
+            $stmt = $dbConnector->prepare($sql);
+            if(!$stmt->execute()) {
+                $dbConnector->rollBack();
+                return false;
+            }
+
+            $dbConnector->commit();
+            return true;
+        } catch (PDOException $pdoEx) {
+            $this->logger->error("SQL Error", $pdoEx);
+            return false;
+        }
+    }
+
+
+    /**
+     * Attempt to validate and insert validated Location-lookup.csv data into database
+     * @param $file - Location-lookup.csv file path
+     * @param $locationArr - Array to hold all the locationIDs for later use with Location.csv
+     * @return array - Returns all the errors from the validations. Returns null when failed to insert data to database
+     */
     public function insertLocation($file, &$locationArr) : array {
         $fileStream = fopen($file, 'r');
         ini_set('auto_detect_line_endings', TRUE);
@@ -60,20 +109,34 @@ class AdminBase
             }
         }
         fclose($fileStream);
+        $_SESSION['location-lookup.csv'] = $count - 1;
 
         $dbConnectorInstance = DatabaseConnector::getInstance();
         $dbConnector = $dbConnectorInstance->getConnection();
-        echo '<br/>' . $verifiedFile;
         $sql = 'LOAD DATA LOCAL INFILE ? INTO TABLE location FIELDS TERMINATED BY \',\' LINES TERMINATED BY \'\n\'';
-        $stmt = $dbConnector->prepare($sql);
-        $stmt->bindParam(1, $verifiedFile);
-        $stmt->execute();
+
+
+        try {
+            $stmt = $dbConnector->prepare($sql);
+            $stmt->bindParam(1, $verifiedFile);
+            $stmt->execute();
+        } catch (PDOException $pdoEx) {
+            $this->logger->error('Error loading data from local file. ', $pdoEx);
+            $fileErrors = NULL;
+        }
+
         //Delete verified file upon completion of uploading
         unlink($verifiedFile);
 
         return $fileErrors;
     }
 
+
+    /**
+     * Attempt to validate and insert validated Demographics.csv data into database
+     * @param $file - Demographics.csv file path
+     * @return array - returns all the errors from the validations. Returns null when failed to insert data to database
+     */
     public function insertUsers($file) : array {
         $fileStream = fopen($file, 'r');
         ini_set('auto_detect_line_endings', TRUE);
@@ -97,20 +160,36 @@ class AdminBase
             }
         }
         fclose($fileStream);
+        $_SESSION['demographics.csv'] = $count - 1;
 
         $dbConnectorInstance = DatabaseConnector::getInstance();
         $dbConnector = $dbConnectorInstance->getConnection();
-        echo '<br/>' . $verifiedFile;
         $sql = 'LOAD DATA LOCAL INFILE ? INTO TABLE user FIELDS TERMINATED BY \',\' LINES TERMINATED BY \'\n\'';
-        $stmt = $dbConnector->prepare($sql);
-        $stmt->bindParam(1, $verifiedFile);
-        $stmt->execute();
+
+        try {
+            $stmt = $dbConnector->prepare($sql);
+            $stmt->bindParam(1, $verifiedFile);
+            $stmt->execute();
+        } catch (PDOException $pdoEx) {
+            $this->logger->error('Error loading data from local file. ', $pdoEx);
+            $fileErrors = NULL;
+        }
+
+
         //Delete verified file upon completion of uploading
         unlink($verifiedFile);
 
         return $fileErrors;
     }
 
+
+    /**
+     * Attempt to validate and insert validated Location.csv data into database. If user choose upload, locationIDs and existing location histories will be retrieved from database
+     * @param $file - Location.csv file path
+     * @param $locationArr - Validated LocationIDs from insertLocation(). Valid only for Bootstrap
+     * @param $type - The type of process user selected. Bootstrap/Upload
+     * @return array - returns all the errors from the validations. Returns null when failed to insert data to database or retrieved existing data (for upload only)
+     */
     public function insertLocationHistory($file, $locationArr, $type) : array {
         $existingLocationHistories = NULL;
         if($type === 'Upload') {
@@ -169,19 +248,28 @@ class AdminBase
         //Gets the parent folder of passed in $file
         $verifiedFile = dirname($file) . '\LocHistVerified.csv';
         //Writes to CSV file
+        $count = 0;
         foreach ($currentLocationHistories as $locationHistory) {
             $newFile = fopen($verifiedFile, 'a');
             fwrite($newFile, $locationHistory->getTimeStamp() . ',' . $locationHistory->getMacAddress() . ',' . $locationHistory->getLocationID() . "\n");
             fclose($newFile);
+            $count++;
         }
+        $_SESSION['location.csv'] = $count;
 
         $dbConnectorInstance = DatabaseConnector::getInstance();
         $dbConnector = $dbConnectorInstance->getConnection();
-        echo '<br/>' . $verifiedFile;
         $sql = 'LOAD DATA LOCAL INFILE ? INTO TABLE location_history FIELDS TERMINATED BY \',\' LINES TERMINATED BY \'\n\'';
-        $stmt = $dbConnector->prepare($sql);
-        $stmt->bindParam(1, $verifiedFile);
-        $stmt->execute();
+
+        try {
+            $stmt = $dbConnector->prepare($sql);
+            $stmt->bindParam(1, $verifiedFile);
+            $stmt->execute();
+        } catch (PDOException $pdoEx) {
+            $this->logger->error('Error loading data from local file. ', $pdoEx);
+            $fileErrors = NULL;
+        }
+
         //Delete verified file upon completion of uploading
         unlink($verifiedFile);
 
