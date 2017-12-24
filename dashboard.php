@@ -36,7 +36,7 @@
                     <a class="group-link" href="">Next Place</a>
                 </li>
                 <li class="nav-item">
-                    <a class="group-link" href="">Popular Places</a>
+                    <a class="group-link" href="topk/popularplace.php">Popular Places</a>
                 </li>
             </ul>
 

@@ -62,6 +62,23 @@ body {
     text-decoration: none;
 }
 
+.footer {
+    position: fixed;
+    bottom: 20px;
+}
+
+.footer a {
+    color: #FFF;
+    font-size: 1.5rem;
+    font-weight: 500;
+}
+
+.footer a:hover {
+    text-decoration: none;
+}
+
+
+
 #content {
     padding-left: 21vw;
     padding-right: 4.5vw;
@@ -83,18 +100,13 @@ body {
     font-weight: 400;
 }
 
-.footer {
-    position: fixed;
-    bottom: 20px;
+
+
+form label {
+    margin-top: 1rem;
 }
 
-.footer a {
-    color: #FFF;
-    font-size: 1.5rem;
-    font-weight: 500;
-}
-
-.footer a:hover {
-    text-decoration: none;
+form #submit {
+    margin-top: 2rem;
 }
 
