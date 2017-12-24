@@ -95,6 +95,7 @@ class AdminBase
         $verifiedFile = dirname($file) . '\LocationVerified.csv';
         $fileErrors = array();
         $count = 1;
+        $insertedRows = 0;
         while(($data = fgetcsv($fileStream)) !== FALSE) {
             $count++;
             $errors = Validator::validateLocation($data);
@@ -104,12 +105,13 @@ class AdminBase
                 $newFile = fopen($verifiedFile, 'a');
                 fputcsv($newFile, $data);
                 fclose($newFile);
+                $insertedRows++;
             } else {
                 $fileErrors[] = new FileRowError($count, $errors);
             }
         }
         fclose($fileStream);
-        $_SESSION['location-lookup.csv'] = $count - 1;
+        $_SESSION['location-lookup.csv'] = $insertedRows;
 
         $dbConnectorInstance = DatabaseConnector::getInstance();
         $dbConnector = $dbConnectorInstance->getConnection();
@@ -146,6 +148,7 @@ class AdminBase
         $verifiedFile = dirname($file) . '\UserVerified.csv';
         $fileErrors = array();
         $count = 1;
+        $insertedRows = 0;
         while(($data = fgetcsv($fileStream)) !== FALSE) {
             $count++;
             $errors = Validator::validateUser($data);
@@ -155,12 +158,13 @@ class AdminBase
                 $newFile = fopen($verifiedFile, 'a');
                 fwrite($newFile, implode(',', $data) . "\n");
                 fclose($newFile);
+                $insertedRows++;
             } else {
                 $fileErrors[] = new FileRowError($count, $errors);
             }
         }
         fclose($fileStream);
-        $_SESSION['demographics.csv'] = $count - 1;
+        $_SESSION['demographics.csv'] = $insertedRows;
 
         $dbConnectorInstance = DatabaseConnector::getInstance();
         $dbConnector = $dbConnectorInstance->getConnection();
@@ -228,7 +232,8 @@ class AdminBase
                         }
                     }
 
-                    if(in_array($key, $currentLocationHistories)) {
+
+                    if(array_key_exists($key, $currentLocationHistories)) {
                         $locationHistory = $currentLocationHistories[$key];
                         $fileErrors[] = new FileRowError($count, 'duplicate row', $locationHistory->getRow());
                         $locationHistory->setRow($count);

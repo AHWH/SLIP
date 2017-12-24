@@ -18,10 +18,11 @@ class Validator
         } else {
             if(is_numeric($locationID)) {
                 if(intval($locationID, 10) < 0) {
-                    $errors['invalid location id'] = "$locationID is negative";
+                    echo "Hello";
+                    $errors['invalid location id'] = "{$locationID} is negative";
                 }
             } else {
-                $errors['invalid location id'] = "$locationID contains non-numeric character(s)";
+                $errors['invalid location id'] = "{$locationID} contains non-numeric character(s)";
             }
         }
 
@@ -175,8 +176,15 @@ class Validator
         if (empty($timestamp)) {
             $errors['blank timestamp'] = "";
         } else {
-            if(!DateTime::createFromFormat('Y-m-d G:i:s', $timestamp)) {
+            $pattern = '%[0-9]\d{1,4}-(0[0-9]|1[0-2])-[0-3][0-9] ([0-1][0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]%';
+            if(!preg_match($pattern, $timestamp)) {
                 $errors['invalid timestamp'] = $timestamp;
+            } else {
+                try {
+                    new DateTime($timestamp);
+                } catch (Exception $ex) {
+                    $errors['invalid timestamp'] = $timestamp;
+                }
             }
         }
 

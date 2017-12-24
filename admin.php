@@ -218,8 +218,8 @@
                         }
                     }
 
-                    if(isset($_SESSION['locErrors'])) {
-                        $errors = $_SESSION['locErrors'];
+                    if(isset($_SESSION['locationErrors'])) {
+                        $errors = $_SESSION['locationErrors'];
                         if(!empty($errors)) {
                 ?>
                 <div class="card">
