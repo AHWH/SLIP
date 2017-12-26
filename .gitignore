@@ -1,2 +1,4 @@
 PHP Notes.txt
 .idea/**
+vendor/**
+composer.phar

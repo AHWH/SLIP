@@ -1,0 +1,20 @@
+{
+  "name": "SE/SLIP",
+  "description": "SLOCA in PHP",
+  "minimum-stability": "stable",
+  "license": "proprietary",
+  "authors": [
+    {
+      "name": "Ho Wei Hong",
+      "email": "weihong.ho.2016@sis.smu.edu.sg"
+    }
+  ],
+
+  "require": {
+    "lcobucci/jwt": "3.2.2"
+  },
+
+  "auotload": {
+    "psr-4": {"Lcobucci\\JWT\\": "vendor/lcobucci/jwt/src"}
+  }
+}

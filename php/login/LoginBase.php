@@ -7,6 +7,7 @@
  */
 require_once '../data/DatabaseConnector.php';
 include '../log4php/Logger.php';
+use Lcobucci\JWT\Builder;
 
 class LoginBase
 {
@@ -56,5 +57,20 @@ class LoginBase
         }
 
         return false;
+    }
+
+    public function generateToken($username) : string
+    {
+        //Please sign with a proper key during actual deployment!
+        $token = (new Builder())->setIssuer('SE') // Configures the issuer (iss claim)
+        ->setAudience('SLIP') // Configures the audience (aud claim)
+        ->setId($username, true) // Configures the id (jti claim), replicating as a header item
+        ->setIssuedAt(time()) // Configures the time that the token was issue (iat claim)
+        ->setNotBefore(time() + 300) // Configures the time that the token can be used (nbf claim)
+        ->setExpiration(time() + 3600) // Configures the expiration time of the token (exp claim)
+        ->set('uid', 1) // Configures a new claim, called "uid"
+        ->getToken(); // Retrieves the generated token
+
+        return $token;
     }
 }
