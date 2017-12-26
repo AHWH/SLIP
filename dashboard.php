@@ -19,6 +19,10 @@
 
     <div class="row">
         <nav class="navbar">
+            <?php
+                session_start();
+                if(isset($_SESSION['isAdmin']) && $_SESSION['isAdmin']) {
+            ?>
             <h3 class="leader-link">Admin</h3>
             <br/>
             <ul class="navbar-nav">
@@ -26,6 +30,9 @@
                     <a class="group-link" href="admin.php">Bootstrap/Upload</a>
                 </li>
             </ul>
+            <?php
+                }
+            ?>
             <h3 class="leader-link">Top-K</h3>
             <br/>
             <ul class="navbar-nav">
@@ -55,7 +62,6 @@
         <div class="col-4 header">
             <h3>Welcome
                 <?php
-                    session_start();
                     echo $_SESSION['username'];
                 ?>
             </h3>

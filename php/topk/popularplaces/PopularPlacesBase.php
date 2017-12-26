@@ -18,7 +18,7 @@ class PopularPlacesBase
      */
     public function __construct()
     {
-        Logger::configure('../log4php/config/config.xml');
+        Logger::configure('../../log4php/config/config.xml');
         $this->logger = Logger::getLogger('main');
     }
 

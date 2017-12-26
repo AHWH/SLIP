@@ -32,6 +32,15 @@
                         <label for="password">Password</label>
                         <input type="password" name="password" id="password" class="form-control" placeholder="Enter your Password" required/>
                     </div>
+                    <?php
+                        session_start();
+                        if(isset($_SESSION['invalidLogin'])) {
+                    ?>
+                    <small class="text-danger">Invalid Login ID/Password. Please try again.</small>
+                    <?php
+                            unset($_SESSION['invalidLogin']);
+                        }
+                    ?>
                     <button class="btn btn-primary loginbtn" type="submit">Login</button>
                 </form>
             </div>
