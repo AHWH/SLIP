@@ -8,6 +8,7 @@
 require_once 'PopularPlacesBase.php';
 
 $dateTime = NULL;
+session_start();
 
 try {
     $dateTime = new DateTime($_POST['dateTime']);
@@ -22,6 +23,7 @@ $_SESSION['results'] = $results;
 $_SESSION['searchTime'] = $dateTime;
 $_SESSION['k'] = $_POST['k'];
 $_SESSION['processed'] = TRUE;
+
 header('Location: ../../../topk/popularplace.php');
 die();
 

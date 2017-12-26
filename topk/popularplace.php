@@ -74,16 +74,16 @@
                             <input id="dateTime" name="dateTime" type="text" class="form-control flatpickr flatpickr-input" required>
                             <label for="k">Select the result's range</label>
                             <select id="k" name="k" class="form-control">
-                                <option>1</option>
-                                <option>2</option>
-                                <option selected>3</option>
-                                <option>4</option>
-                                <option>5</option>
-                                <option>6</option>
-                                <option>7</option>
-                                <option>8</option>
-                                <option>9</option>
-                                <option>10</option>
+                                <option value="1">1</option>
+                                <option value="2">2</option>
+                                <option value="3" selected>3</option>
+                                <option value="4">4</option>
+                                <option value="5">5</option>
+                                <option value="6">6</option>
+                                <option value="7">7</option>
+                                <option value="8">8</option>
+                                <option value="9">9</option>
+                                <option value="10">10</option>
                             </select>
                             <input type="submit" id="submit" name="submit" class="btn btn-primary" value="Get Top-k Popular Places"/>
                         </form>
@@ -91,92 +91,93 @@
                 </div>
             </div>
         </div>
-    </div>
 
     <?php
     if(isset($_SESSION['processed'])) {
         if (isset($_SESSION['error'])) {
-    ?>
-    <div class="row mt-5">
-        <div id="amtinserted" class="col-12">
-            <div class="card">
-                <div class="card-body">
-                    <div class="container align-items-center">
-                        <div class="row justify-content-around">
-                            <div class="col">
-                                <h6 class="text-danger"><?php print $_SESSION['error'] ?></h6>
+            ?>
+            <div class="row mt-5">
+                <div id="amtinserted" class="col-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="container align-items-center">
+                                <div class="row justify-content-around">
+                                    <div class="col">
+                                        <h6 class="text-danger"><?php print $_SESSION['error'] ?></h6>
+                                    </div>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
-        </div>
-    </div>
-    <?php
+            <?php
             unset($_SESSION['error']);
         } else {
-    ?>
-    <div class="row mt-5">
-        <div id="resultsTable" class="col-12">
-            <div class="card">
-                <div class="card-header">
-                    <h4>Last Search for: Top <?php print $_SESSION['k']?> Popular Places at <?php print $_SESSION['searchTime'] ?></h4>
-                </div>
+            ?>
+            <div class="row mt-5 mb-5">
+                <div id="resultsTable" class="col-12">
+                    <div class="card">
+                        <div class="card-header">
+                            <h4>Last Search for: Top <?php print $_SESSION['k']?> Popular Places at <?php print ($_SESSION['searchTime'])->add(new DateInterval('PT1S'))->format('Y-m-d H:i:s') ?></h4>
+                        </div>
 
-                <div class="card-body">
-                    <?php
-                        $results = $_SESSION['results'];
-                        if(empty($results)) {
-                    ?>
-                    <h6 class="text-info">No Popular Places found</h6>
-                    <?php
-                        } else {
-                    ?>
-                    <table class="table table-hover table-striped">
-                        <thead>
-                            <tr>
-                                <th scope="col">Rank</th>
-                                <th scope="col">Semantic Place</th>
-                                <th scope="col">Number of People</th>
-                            </tr>
-                        </thead>
-                        <tbody>
+                        <div class="card-body">
                             <?php
-                                $k = $_SESSION['k'];
-                                $rank = 1;
-                                foreach ($results as $result => $places) {
-                                    ksort($places);
-                                    foreach ($places as $place) {
-                            ?>
-                            <tr><?php print $rank ?></tr>
-                            <tr><?php print $place ?></tr>
-                            <tr><?php print $result ?></tr>
-                            <?php
-                                    }
+                            $results = $_SESSION['results'];
+                            if(empty($results)) {
+                                ?>
+                                <h6 class="text-info">No Popular Places found</h6>
+                                <?php
+                            } else {
+                                ?>
+                                <table class="table table-hover table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th scope="col">Rank</th>
+                                        <th scope="col">Semantic Place</th>
+                                        <th scope="col">Number of People</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <?php
+                                    $k = $_SESSION['k'];
+                                    $rank = 1;
+                                    foreach ($results as $result => $places) {
+                                        ksort($places);
+                                        foreach ($places as $place) {
+                                            ?>
+                                            <tr>
+                                                <td><?php print $rank ?></td>
+                                                <td><?php print $place ?></td>
+                                                <td><?php print $result ?></td>
+                                            </tr>
+                                            <?php
+                                        }
 
-                                    if(++$rank == $k) {
-                                        break;
+                                        if(++$rank > $k) {
+                                            break;
+                                        }
                                     }
-                                }
+                                    ?>
+                                    </tbody>
+                                </table>
+                                <?php
+                            }
                             ?>
-                        </tbody>
-                    </table>
-                    <?php
-                        }
-                    ?>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
-    <?php
+            <?php
             unset($_SESSION['results']);
             unset($_SESSION['searchTime']);
             unset($_SESSION['k']);
-            unset($_SESSION['processed']);
         }
         unset($_SESSION['processed']);
     }
     ?>
+    </div>
 
     <script>
         flatpickr("#dateTime", {

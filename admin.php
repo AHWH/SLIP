@@ -91,7 +91,7 @@
             if(isset($_SESSION['processAdmin'])) {
                 if(isset($_SESSION['error'])) {
         ?>
-        <div class="row mt-5">
+        <div class="row mt-5 mb-5">
             <div id="amtinserted" class="col-12">
                 <div class="card">
                     <div class="card-body">

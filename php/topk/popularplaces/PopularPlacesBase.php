@@ -41,10 +41,17 @@ class PopularPlacesBase
         $results = NULL;
         try {
             $stmt = $dbConnector->prepare($sql);
-            $startTime = $searchDateTime->sub(new DateInterval('PT1S'));
-            $endTime = $searchDateTime->sub(new DateInterval('PT14M59S'));
-            $stmt->bindParam(1, $startTime->format('Y-m-d H:i:s'));
-            $stmt->bindParam(2, $endTime->format('Y-m-d H:i:s'));
+            /**Time Manipulation
+             * Note: PHP modifies them by reference! So they will always reference by memory.
+             * Calling ->format after adjusting both the start and end time will make both the last modified time
+             * */
+            $startTime = $searchDateTime->sub(new DateInterval('PT15M'));
+            $startTimeStr = $startTime->format('Y-m-d H:i:s');
+            $endTime = $searchDateTime->add(new DateInterval('PT14M59S'));
+            $endTimeStr = $endTime->format('Y-m-d H:i:s');
+
+            $stmt->bindParam(1, $startTimeStr);
+            $stmt->bindParam(2, $endTimeStr);
             $stmt->execute();
 
             $results = array();
@@ -54,6 +61,7 @@ class PopularPlacesBase
 
                 $places = $results[$count] ?? array();
                 $places[] = $semanticPlace;
+                $results[$count] = $places;
             }
 
             krsort($results, SORT_NUMERIC);
