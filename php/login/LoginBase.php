@@ -7,7 +7,9 @@
  */
 require_once '../data/DatabaseConnector.php';
 include '../log4php/Logger.php';
-use Lcobucci\JWT\Builder;
+require '../../vendor/autoload.php';
+use Firebase\JWT\JWT;
+use Firebase\JWT\ExpiredException;
 
 class LoginBase
 {
@@ -59,18 +61,50 @@ class LoginBase
         return false;
     }
 
-    public function generateToken($username) : string
+    /**
+     * @param string $username The login ID
+     * @param string $sharedSecret The self-created shared secret
+     * @return mixed Returns the generated JWT token with HS256 encryption. Returns false if exception is encountered during the generation
+     */
+    public function generateToken($username, $sharedSecret)
     {
         //Please sign with a proper key during actual deployment!
-        $token = (new Builder())->setIssuer('SE') // Configures the issuer (iss claim)
-        ->setAudience('SLIP') // Configures the audience (aud claim)
-        ->setId($username, true) // Configures the id (jti claim), replicating as a header item
-        ->setIssuedAt(time()) // Configures the time that the token was issue (iat claim)
-        ->setNotBefore(time() + 300) // Configures the time that the token can be used (nbf claim)
-        ->setExpiration(time() + 3600) // Configures the expiration time of the token (exp claim)
-        ->set('uid', 1) // Configures a new claim, called "uid"
-        ->getToken(); // Retrieves the generated token
+        $token = array(
+            'sub' => $username,
+            'iat' => microtime(true),
+            'exp' => microtime(true) + 3600000
+        );
 
-        return $token;
+        $jwt = null;
+        try {
+            $jwt = JWT::encode($token, $sharedSecret, 'HS256');
+        } catch (Exception $ex) {
+            $this->logger->error('Having problem generating token.', $ex);
+            return false;
+        }
+
+        return $jwt;
+    }
+
+    /**
+     * @param string $jwt The given JWT Spec's token
+     * @param string $sharedSecret The shared secret porvided
+     * @return mixed Returns the decoded username if no exceptions are thrown during the validation. Else returns -1 if token has expired or 0 if token is invalid for other reasons.
+     */
+    public function validateToken($jwt, $sharedSecret)
+    {
+        try {
+            //JWT::decode will return the payload portion of the JWT Token as an Object. Casting it to array is necessary to access it
+            $decoded = JWT::decode($jwt, $sharedSecret, array('HS256'));
+            $decodedArr = (array) $decoded;
+
+            return $decodedArr['sub'];
+        } catch (ExpiredException $expEx) {
+            return -1;
+        } catch (Exception $ex) {
+            $this->logger->error('Having problem validating token.', $ex);
+            return 0;
+        }
+
     }
 }
