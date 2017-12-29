@@ -30,6 +30,42 @@ class AdminBase
         $this->logger->pushHandler(new StreamHandler($logFile, Logger::DEBUG));
     }
 
+    public function createUploadFolder($tempFolder) : bool
+    {
+        if(!is_dir($tempFolder)) {
+            //Checks for existence of upload folder in temp folder. Creates one if it does not exists
+            if(!mkdir($tempFolder)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
+    /**
+     * @param string $file The path of the file
+     * @param string|null $path The path to extract to [optional]
+     * @return bool Returns true if successfully unzipped. Else returns the error code
+     */
+    public function unzipFile($file, $path = NULL) : bool
+    {
+        $zip = new ZipArchive;
+        $zipSuccess = $zip->open($file);
+        if($zipSuccess === TRUE) {
+            //If a proper zip file, extract to temp upload folder
+            if($path === NULL) {
+                $zip->extractTo(sys_get_temp_dir());
+            } else {
+                $zip->extractTo($path);
+            }
+            $zip->close();
+
+            return true;
+        } else {
+            return $zipSuccess;
+        }
+    }
+
 
     /**
      * Wipes the entire database

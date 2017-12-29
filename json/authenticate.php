@@ -32,18 +32,24 @@ if(empty($username) || empty($password)) {
         $jwt = $loginBase->generateToken($username, 'ABCDEFGH12345678');
         $jsonResponseArr['status'] = 'success';
         $jsonResponseArr['token'] = $jwt;
+
+        printJSON();
     } else {
         $jsonErrors[] = 'invalid username/password';
         onError();
     }
 }
 
-header('Content-type: text/json');
-print json_encode($jsonResponseArr, JSON_PRETTY_PRINT);
-die();
 
 function onError() {
     $jsonResponseArr['status'] = 'error';
-    $this->jsonResponseArr['errors'] = $this->jsonErrors;;
+    $this->jsonResponseArr['errors'] = $this->jsonErrors;
+    printJSON();
+}
+
+function printJSON() {
+    header('Content-type: text/json');
+    print json_encode($this->jsonResponseArr, JSON_PRETTY_PRINT);
+    die();
 }
 ?>

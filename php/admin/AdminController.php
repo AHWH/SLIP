@@ -5,8 +5,8 @@
  * Date: 17/12/2017
  * Time: 5:59 PM
  */
-require_once 'AdminBase.php';
-require_once '../data/model/FileRowError.php';
+require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
+use IS203\admin\AdminBase;
 
 /*Retrieved files from form*/
 $fileName = $_FILES['file']['name'];
@@ -15,25 +15,18 @@ $fileSize = $_FILES['file']['size'];
 $fileTmpName = $_FILES['file']['tmp_name'];
 
 session_start();
+$adminBase = new AdminBase();
+
 /*Folder Management*/
 $tempFolder = sys_get_temp_dir() . '\upload';
-if(!is_dir($tempFolder)) {
-    //Checks for existence of upload folder in temp folder. Creates one if it does not exists
-    if(!mkdir($tempFolder)) {
-        onError('Failed to create upload folder');
-    }
+if(!$adminBase->createUploadFolder($tempFolder)) {
+    onError('Failed to create upload folder');
 }
 
 
 /*Zip Management*/
-$zip = new ZipArchive;
-$zipSuccess = $zip->open($fileTmpName);
-if($zipSuccess === TRUE) {
-    //If a proper zip file, extract to temp upload folder
-    $zip->extractTo($tempFolder);
-    $zip->close();
-} else {
-    onError("Failed to open zip file. ZipArchive's Error Code: {$zipSuccess}");
+if(($status = $adminBase->unzipFile($fileTmpName, $tempFolder)) !== TRUE) {
+    onError("Failed to open zip file. ZipArchive's Error Code: {$status}");
 }
 
 
@@ -44,7 +37,6 @@ $locationHistoryFile = $tempFolder . '\location.csv';
 
 /*Based on type chosen, process the files*/
 $processType = $_POST['submit'];
-$adminBase = new AdminBase();
 if($processType === 'Bootstrap') {
     if(!$adminBase->bootstrap()) {
         onError('Bootstrap process error. Having difficulty with wiping database');
