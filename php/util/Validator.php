@@ -5,6 +5,7 @@
  * Date: 18/12/2017
  * Time: 5:17 PM
  */
+namespace IS203\util;
 
 class Validator
 {

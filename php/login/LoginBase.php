@@ -5,11 +5,15 @@
  * Date: 26/12/2017
  * Time: 8:15 PM
  */
-require_once '../data/DatabaseConnector.php';
-include '../log4php/Logger.php';
-require '../../vendor/autoload.php';
+namespace IS203\login;
+
+use IS203\data\DatabaseConnector;
+
+require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
 use Firebase\JWT\JWT;
 use Firebase\JWT\ExpiredException;
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 
 class LoginBase
 {
@@ -24,9 +28,9 @@ class LoginBase
     {
         $this->settings = parse_ini_file($settingsFile, true);
 
-        $loggerConfig = $_SERVER['SERVER_NAME'] . 'php/log4php/config/config.xml';
-        Logger::configure($loggerConfig);
-        $this->logger = Logger::getLogger('main');
+        $logFile = $_SERVER['SERVER_NAME'] . '/mylog.log';
+        $this->logger = new Logger('main');
+        $this->logger->pushHandler(new StreamHandler($logFile, Logger::DEBUG));
     }
 
     public function checkAdmin($username, $password) : bool
@@ -91,7 +95,7 @@ class LoginBase
      * @param string $sharedSecret The shared secret porvided
      * @return mixed Returns the decoded username if no exceptions are thrown during the validation. Else returns -1 if token has expired or 0 if token is invalid for other reasons.
      */
-    public function validateToken($jwt, $sharedSecret)
+    public static function validateToken($jwt, $sharedSecret)
     {
         try {
             //JWT::decode will return the payload portion of the JWT Token as an Object. Casting it to array is necessary to access it
@@ -102,7 +106,6 @@ class LoginBase
         } catch (ExpiredException $expEx) {
             return -1;
         } catch (Exception $ex) {
-            $this->logger->error('Having problem validating token.', $ex);
             return 0;
         }
 

@@ -5,6 +5,7 @@
  * Date: 16/12/2017
  * Time: 11:19 PM
  */
+namespace IS203\data;
 
 class DatabaseConnector {
     private static $instance = NULL;

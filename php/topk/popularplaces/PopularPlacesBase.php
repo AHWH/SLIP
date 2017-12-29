@@ -5,9 +5,13 @@
  * Date: 24/12/2017
  * Time: 10:58 PM
  */
-require_once '../../data/DatabaseConnector.php';
+namespace IS203\topk\popularplaces;
 
-include('../../log4php/Logger.php');
+require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
+use IS203\data\DatabaseConnector;
+
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 
 class PopularPlacesBase
 {
@@ -18,8 +22,9 @@ class PopularPlacesBase
      */
     public function __construct()
     {
-        Logger::configure('../../log4php/config/config.xml');
-        $this->logger = Logger::getLogger('main');
+        $logFile = $_SERVER['SERVER_NAME'] . '/mylog.log';
+        $this->logger = new Logger('main');
+        $this->logger->pushHandler(new StreamHandler($logFile, Logger::DEBUG));
     }
 
     public function getPopularPlaces($searchDateTime) : array

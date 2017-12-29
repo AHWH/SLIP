@@ -5,6 +5,7 @@
  * Date: 18/12/2017
  * Time: 5:19 PM
  */
+namespace IS203\data\model;
 
 class FileRowError
 {

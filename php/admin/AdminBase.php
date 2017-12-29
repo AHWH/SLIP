@@ -5,12 +5,16 @@
  * Date: 20/12/2017
  * Time: 9:58 PM
  */
-require_once '../data/DatabaseConnector.php';
-require_once '../util/Validator.php';
-require_once '../data/model/FileRowError.php';
-require_once '../data/model/LocationHistory.php';
+namespace IS203\admin;
 
-include('../log4php/Logger.php');
+require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
+use IS203\data\DatabaseConnector;
+use IS203\util\Validator;
+use IS203\data\model\FileRowError;
+use IS203\data\model\LocationHistory;
+
+use Monolog\Logger;
+use Monolog\Handler\StreamHandler;
 
 class AdminBase
 {
@@ -21,8 +25,9 @@ class AdminBase
      */
     public function __construct()
     {
-        Logger::configure('../log4php/config/config.xml');
-        $this->logger = Logger::getLogger('main');
+        $logFile = $_SERVER['SERVER_NAME'] . '/mylog.log';
+        $this->logger = new Logger('main');
+        $this->logger->pushHandler(new StreamHandler($logFile, Logger::DEBUG));
     }
 
 
