@@ -11,10 +11,6 @@
   ],
 
   "require": {
-    "lcobucci/jwt": "3.2.2"
-  },
-
-  "auotload": {
-    "psr-4": {"Lcobucci\\JWT\\": "vendor/lcobucci/jwt/src"}
+    "firebase/php-jwt": "5.0.0"
   }
 }
