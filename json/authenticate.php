@@ -42,14 +42,18 @@ if(empty($username) || empty($password)) {
 
 
 function onError() {
-    $jsonResponseArr['status'] = 'error';
-    $this->jsonResponseArr['errors'] = $this->jsonErrors;
+    global $jsonResponseArr, $jsonErrors;
+
+    $jsonResponseArr ['status'] = 'error';
+    $jsonResponseArr ['errors'] = $jsonErrors;
     printJSON();
 }
 
 function printJSON() {
     header('Content-type: text/json');
-    print json_encode($this->jsonResponseArr, JSON_PRETTY_PRINT);
+
+    global $jsonResponseArr;
+    print json_encode($jsonResponseArr, JSON_PRETTY_PRINT);
     die();
 }
 ?>

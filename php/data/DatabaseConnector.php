@@ -6,6 +6,7 @@
  * Time: 11:19 PM
  */
 namespace IS203\data;
+use \PDO;
 
 class DatabaseConnector {
     private static $instance = NULL;

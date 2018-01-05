@@ -16,6 +16,10 @@ use IS203\data\model\LocationHistory;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
+use \ZipArchive;
+use \PDOException;
+use \PDO;
+
 class AdminBase
 {
     private $logger;
@@ -127,7 +131,7 @@ class AdminBase
      * @param $locationArr - Array to hold all the locationIDs for later use with Location.csv
      * @return array - Returns all the errors from the validations. Returns null when failed to insert data to database
      */
-    public function insertLocation($file, &$locationArr) : array {
+    public function insertLocation($file, &$locationArr) {
         $fileStream = fopen($file, 'r');
         ini_set('auto_detect_line_endings', TRUE);
         //Skip the header
@@ -141,7 +145,7 @@ class AdminBase
             $count++;
             $errors = Validator::validateLocation($data);
             if(empty($errors)) {
-                //No error write to verfied file
+                //No error write to verified file
                 $locationArr[] = $data[0];
                 $newFile = fopen($verifiedFile, 'a');
                 fputcsv($newFile, $data);
@@ -180,7 +184,7 @@ class AdminBase
      * @param $file - Demographics.csv file path
      * @return array - returns all the errors from the validations. Returns null when failed to insert data to database
      */
-    public function insertUsers($file) : array {
+    public function insertUsers($file) {
         $fileStream = fopen($file, 'r');
         ini_set('auto_detect_line_endings', TRUE);
         //Skips the header
@@ -235,7 +239,7 @@ class AdminBase
      * @param $type - The type of process user selected. Bootstrap/Upload
      * @return array - returns all the errors from the validations. Returns null when failed to insert data to database or retrieved existing data (for upload only)
      */
-    public function insertLocationHistory($file, $locationArr, $type) : array {
+    public function insertLocationHistory($file, $locationArr, $type) {
         $existingLocationHistories = NULL;
         if($type === 'Upload') {
             $locationArr = $this->getLocationIDsFromDatabase();

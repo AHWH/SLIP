@@ -7,6 +7,9 @@
  */
 namespace IS203\util;
 
+use \DateTime;
+use \Exception;
+
 class Validator
 {
     static function validateLocation(&$data) : array {
@@ -19,7 +22,6 @@ class Validator
         } else {
             if(is_numeric($locationID)) {
                 if(intval($locationID, 10) < 0) {
-                    echo "Hello";
                     $errors['invalid location id'] = "{$locationID} is negative";
                 }
             } else {

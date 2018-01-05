@@ -5,8 +5,11 @@
  * Date: 17/12/2017
  * Time: 4:57 PM
  */
-require_once '../data/DatabaseConnector.php';
-require_once 'LoginBase.php';
+
+require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
+
+use IS203\data\DatabaseConnector;
+use IS203\login\LoginBase;
 
 $username = $_POST['username'];
 $password = $_POST['password'];

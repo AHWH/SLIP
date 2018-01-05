@@ -7,13 +7,16 @@
  */
 namespace IS203\login;
 
-use IS203\data\DatabaseConnector;
-
 require $_SERVER['DOCUMENT_ROOT'] . '/vendor/autoload.php';
+
+use IS203\data\DatabaseConnector;
 use Firebase\JWT\JWT;
 use Firebase\JWT\ExpiredException;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
+
+use \Exception;
+use \PDOException;
 
 class LoginBase
 {

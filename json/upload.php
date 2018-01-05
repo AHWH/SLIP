@@ -21,6 +21,7 @@ $rowsInserted = array();
 //Checks token first
 if(!isset($_POST['token'])) {
     $jsonErrors[] = "missing token";
+    onError();
 }
 
 $token = $_POST['token'];
@@ -37,12 +38,12 @@ if(empty($token)) {
 
 
 //Checks file variable
-if(!isset($_FILES['file'])) {
+if(!isset($_FILES['upload-file'])) {
     $jsonErrors[] = 'missing upload file';
     onError();
 } else {
     //Wiki states to assume the file given is never empty and always valid
-    $fileTmpName = $_FILES['file']['tmp_name'];
+    $fileTmpName = $_FILES['upload-file']['tmp_name'];
     $adminBase = new AdminBase();
 
     /*Folder Management*/
@@ -68,7 +69,9 @@ if(!isset($_FILES['file'])) {
     if($userErrors === NULL) {
         $jsonErrors[] = 'Bootstrap process error. Having difficulty uploading Demographics data to database';
     } else {
-        $rowsInserted['demographics.csv'] = $_SESSION['demographics.csv'];
+        $rowsInsertedInnerArr = array();
+        $rowsInsertedInnerArr['demographics.csv'] = $_SESSION['demographics.csv'];
+        $rowsInserted[] = $rowsInsertedInnerArr;
         foreach ($userErrors as $userError) {
             $errorsArr = array();
             foreach ($userError as $reason => $cause) {
@@ -86,14 +89,15 @@ if(!isset($_FILES['file'])) {
     unlink($userFile);
 
 
-    $locHistErrors = $adminBase->insertLocationHistory($locationHistoryFile, $locationArr, 'Upload');
+    $locHistErrors = $adminBase->insertLocationHistory($locationHistoryFile, NULL, 'Upload');
     if($locHistErrors === NULL) {
         $jsonErrors = array();
         $jsonErrors[] = 'Bootstrap process error. Having difficulty uploading Location Histories data to database';
         partialComplete();
     } else {
-        $_SESSION['locHistErrors'] = $locHistErrors;
-        $rowsInserted['location.csv'] = $_SESSION['location.csv'];
+        $rowsInsertedInnerArr = array();
+        $rowsInsertedInnerArr['location.csv'] = $_SESSION['location.csv'];
+        $rowsInserted[] = $rowsInsertedInnerArr;
         foreach ($locHistErrors as $locHistError) {
             $errorsArr = array();
             foreach ($locHistError as $reason => $cause) {
@@ -119,26 +123,34 @@ if(!isset($_FILES['file'])) {
     $jsonResponseArr['num-record-loaded'] = $rowsInserted;
     $jsonResponseArr['errors'] = $jsonErrors;
     printJSON();
+
+    rmdir($tempFolder);
 }
 
 
 
 function onError() {
+    global $jsonResponseArr, $jsonErrors;
+
     $jsonResponseArr['status'] = 'error';
-    $this->jsonResponseArr['errors'] = $this->jsonErrors;
+    $jsonResponseArr['errors'] = $jsonErrors;
     printJSON();
 }
 
 function partialComplete() {
-    $this->jsonResponseArr['status'] = 'error';
-    $this->jsonResponseArr['num-record-loaded'] = $this->rowsInserted;
-    $this->jsonResponseArr['errors'] = $this->jsonErrors;
+    global $jsonResponseArr, $jsonErrors, $rowsInserted;
+
+    $jsonResponseArr['status'] = 'error';
+    $jsonResponseArr['num-record-loaded'] = $rowsInserted;
+    $jsonResponseArr['errors'] = $jsonErrors;
     printJSON();
 }
 
 function printJSON() {
     header('Content-type: text/json');
-    print json_encode($this->jsonResponseArr, JSON_PRETTY_PRINT);
+
+    global $jsonResponseArr;
+    print json_encode($jsonResponseArr, JSON_PRETTY_PRINT);
     die();
 }
 ?>
