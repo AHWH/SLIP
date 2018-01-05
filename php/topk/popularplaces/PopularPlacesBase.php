@@ -13,6 +13,9 @@ use IS203\data\DatabaseConnector;
 use Monolog\Logger;
 use Monolog\Handler\StreamHandler;
 
+use \PDOException;
+use \DateInterval;
+
 class PopularPlacesBase
 {
     private $logger;
